@@ -22,3 +22,7 @@ header {
   flex-direction: row;
   margin-bottom: 50px;
 }
+
+.label-filter {
+  width: 200px;
+}

@@ -9,21 +9,32 @@ function App() {
   const [repoName, setRepoName] = useState("");
   const [userName, setUserName] = useState("");
   const [data, setData] = useState([]);
+  const [filterInput, setFilterInput] = useState([]);
 
   function handleSubmit() {
     fetch(`https://api.github.com/repos/${userName}/${repoName}/issues`)
       .then((res) => res.json())
       .then((fetchedData) => {
         setData(fetchedData);
+        setFilterInput(fetchedData);
       });
   }
+
   function handleUserName(e) {
     setUserName(e.target.value);
   }
+
   function handleRepoName(e) {
     setRepoName(e.target.value);
   }
 
+  function handleAssigneeFilter(e) {
+    const filteredData =
+      e.target.value === ""
+        ? [...data]
+        : data.filter((el) => el.assignee?.login.indexOf(e.target.value) > -1);
+    setFilterInput(filteredData);
+  }
 
   return (
     <div className="App">
@@ -59,6 +70,7 @@ function App() {
               id="outlined-basic"
               label="filter by assignee"
               variant="outlined"
+              onChange={handleAssigneeFilter}
             />
             <Button onClick={null} variant="outlined">
               SortByDate
@@ -66,7 +78,7 @@ function App() {
           </div>
         </div>
 
-        <GitDataTable rows={data} />
+        <GitDataTable rows={filterInput} />
       </Container>
     </div>
   );
