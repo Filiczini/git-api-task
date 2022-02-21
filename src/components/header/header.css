@@ -1,0 +1,11 @@
+.header {
+  display: flex;
+  padding: 20px;
+  flex-direction: row;
+  align-items: center;
+  background-color: lightgrey;
+}
+
+.header img {
+  max-width: 50px;
+}
