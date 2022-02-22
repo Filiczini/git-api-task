@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
-import Header from "../components/header/header";
 import GitDataTable from "../components/data-table/git-data-table";
 
 function Home() {
@@ -14,9 +13,12 @@ function Home() {
 
   function handleSubmit() {
     setIsPending(true);
-    fetch(`https://api.github.com/repos/${userName}/${repoName}/issues`)
+    fetch(
+      `https://api.github.com/repos/${userName}/${repoName}/issues?page=1&per_page=100`
+    )
       .then((res) => res.json())
       .then((fetchedData) => {
+        console.log(fetchedData);
         setData(fetchedData);
         setFilterInput(fetchedData);
         setIsPending(false);
@@ -40,8 +42,6 @@ function Home() {
   }
   return (
     <div className="Home">
-      <Header />
-
       <Container maxWidth="lg">
         <div className="table-header">
           <form>
@@ -79,7 +79,12 @@ function Home() {
             </Button>
           </div>
         </div>
-        <GitDataTable isPending={isPending} rows={filterInput} />
+        <GitDataTable
+          isPending={isPending}
+          rows={filterInput}
+          user={userName}
+          repo={repoName}
+        />
       </Container>
     </div>
   );

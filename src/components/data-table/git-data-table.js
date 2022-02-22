@@ -1,4 +1,5 @@
 import * as React from "react";
+import { Link } from "react-router-dom";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -9,9 +10,19 @@ import Paper from "@mui/material/Paper";
 
 export default function GitDataTable(props) {
   const dataRows = props.rows.map((row) => (
-    <TableRow key={row.title}>
+    <TableRow key={row.title + row.number}>
       <TableCell component="th" scope="row">
-        {row.title}
+        {" "}
+        {!row.pull_request && (
+          <Link to={`issue/${props.user}/${props.repo}/issues/${row.number}`}>
+            {row.title}
+          </Link>
+        )}
+        {row.pull_request && (
+          <Link to={`issue/${props.user}/${props.repo}/pull/${row.number}`}>
+            {row.title}
+          </Link>
+        )}
       </TableCell>
       <TableCell align="right">{row.labels.map((el) => el.name)}</TableCell>
       <TableCell align="right">
@@ -33,15 +44,15 @@ export default function GitDataTable(props) {
         </TableHead>
         <TableBody>
           {props.rows.length > 0 && dataRows}
-          {!props.isPending ? (
+          {!props.isPending && props.rows.length < 1 ? (
             <TableRow>
               <TableCell>Please enter Username and Repository</TableCell>
             </TableRow>
-          ) : (
+          ) : props.rows.length < 1 ? (
             <TableRow>
               <TableCell>Loading...</TableCell>
             </TableRow>
-          )}
+          ) : null}
         </TableBody>
       </Table>
     </TableContainer>

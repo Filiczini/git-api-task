@@ -1,4 +1,5 @@
 import "./header.css";
+import { Link } from "react-router-dom";
 
 function Header() {
   return (
@@ -13,7 +14,7 @@ function Header() {
         <nav className="navbar">
           <h1>The Git API Searcher</h1>
           <div className="links">
-            <a href="/">Home</a>
+            <Link to="/">Home</Link>
           </div>
         </nav>
       </div>
