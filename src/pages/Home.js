@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
@@ -9,7 +9,22 @@ function Home() {
   const [userName, setUserName] = useState("");
   const [isPending, setIsPending] = useState(false);
   const [data, setData] = useState([]);
-  const [filterInput, setFilterInput] = useState([]);
+  const [assigneeInput, setAssigneeInput] = useState("");
+  const [labelInput, setLabelInput] = useState("");
+  const [filteredData, setFilteredData] = useState([]);
+
+  useEffect(() => {
+    let filteredArray =
+      labelInput === ""
+        ? [...data]
+        : data.filter((el) =>
+            el.labels.some((item) => item.name.indexOf(labelInput) > -1)
+          );
+    let second = filteredArray.filter(
+      (el) => el.assignee?.login.indexOf(assigneeInput) > -1
+    );
+    setFilteredData(second);
+  }, [labelInput, assigneeInput, data]);
 
   function handleSubmit() {
     setIsPending(true);
@@ -18,9 +33,8 @@ function Home() {
     )
       .then((res) => res.json())
       .then((fetchedData) => {
-        console.log(fetchedData);
         setData(fetchedData);
-        setFilterInput(fetchedData);
+        setFilteredData(fetchedData);
         setIsPending(false);
       });
   }
@@ -33,12 +47,11 @@ function Home() {
     setRepoName(e.target.value);
   }
 
-  function handleAssigneeFilter(e) {
-    const filteredData =
-      e.target.value === ""
-        ? [...data]
-        : data.filter((el) => el.assignee?.login.indexOf(e.target.value) > -1);
-    setFilterInput(filteredData);
+  function handleAssignee(e) {
+    setAssigneeInput(e.target.value);
+  }
+  function handleLabel(e) {
+    setLabelInput(e.target.value);
   }
   return (
     <div className="Home">
@@ -66,13 +79,13 @@ function Home() {
               id="outlined-basic"
               label="filter by label"
               variant="outlined"
-              onChange={handleUserName}
+              onChange={handleLabel}
             />
             <TextField
               id="outlined-basic"
               label="filter by assignee"
               variant="outlined"
-              onChange={handleAssigneeFilter}
+              onChange={handleAssignee}
             />
             <Button onClick={null} variant="outlined">
               SortByDate
@@ -81,7 +94,7 @@ function Home() {
         </div>
         <GitDataTable
           isPending={isPending}
-          rows={filterInput}
+          rows={filteredData}
           user={userName}
           repo={repoName}
         />

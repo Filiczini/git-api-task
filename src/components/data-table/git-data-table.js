@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import "./git-data-table.css";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -24,7 +25,13 @@ export default function GitDataTable(props) {
           </Link>
         )}
       </TableCell>
-      <TableCell align="right">{row.labels.map((el) => el.name)}</TableCell>
+      <TableCell align="right">
+        {row.labels.map((el) => (
+          <span className="label" key={el.name + el.number}>
+            {el.name}
+          </span>
+        ))}
+      </TableCell>
       <TableCell align="right">
         {row.assignee !== null ? row.assignee.login : "no assignees"}
       </TableCell>
