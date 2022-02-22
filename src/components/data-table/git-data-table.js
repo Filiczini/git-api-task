@@ -32,13 +32,14 @@ export default function GitDataTable(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {props.rows.length > 0 ? (
-            dataRows
+          {props.rows.length > 0 && dataRows}
+          {!props.isPending ? (
+            <TableRow>
+              <TableCell>Please enter Username and Repository</TableCell>
+            </TableRow>
           ) : (
             <TableRow>
-              <TableCell>
-                Please enter GitHub UserName and repository name
-              </TableCell>
+              <TableCell>Loading...</TableCell>
             </TableRow>
           )}
         </TableBody>
