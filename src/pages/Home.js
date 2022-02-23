@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
@@ -7,42 +7,43 @@ import GitDataTable from "../components/data-table/git-data-table";
 function Home() {
   const [repoName, setRepoName] = useState("");
   const [userName, setUserName] = useState("");
+
   const [isPending, setIsPending] = useState(false);
-  const [data, setData] = useState([]);
+
   const [assigneeInput, setAssigneeInput] = useState("");
   const [labelInput, setLabelInput] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
+  const [data, setData] = useState([]);
+
   const [sorted, setSorted] = useState(false);
 
-  useEffect(() => {
-    console.log("click");
-    let filteredArray = !labelInput
-      ? [...data]
-      : data.filter((el) =>
-          el.labels.some((item) => item.name.indexOf(labelInput) > -1)
-        );
-    let second = !assigneeInput
-      ? filteredArray
-      : filteredArray.filter(
-          (el) => el.assignee?.login.indexOf(assigneeInput) > -1
-        );
-
-    setFilteredData(second);
-  }, [labelInput, assigneeInput, data]);
-
-  function handleSubmit() {
-    setIsPending(true);
-    fetch(
-      `https://api.github.com/repos/${userName}/${repoName}/issues?page=1&per_page=10`
-    )
-      .then((res) => res.json())
-      .then((fetchedData) => {
-        console.log(fetchedData);
-        setData(fetchedData);
-        setFilteredData(fetchedData);
-        setIsPending(false);
-      });
+  async function handleSubmit() {
+    try {
+      setIsPending(true);
+      const issues = await fetch(
+        `https://api.github.com/repos/${userName}/${repoName}/issues?page=1&per_page=100`
+      );
+      const preparedData = await issues.json();
+      setData(preparedData);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsPending(false);
+    }
   }
+  const filteredArray = useMemo(() => {
+    if (!labelInput) {
+      return data;
+    }
+    const filterByLabel = data.filter((el) =>
+      el.labels.some((item) => item.name.includes(labelInput))
+    );
+    if (!assigneeInput) {
+      return filterByLabel;
+    }
+    return filterByLabel.filter((el) =>
+      el.assignee?.login.includes(assigneeInput)
+    );
+  }, [labelInput, data, assigneeInput]);
 
   function handleUserName(e) {
     setUserName(e.target.value);
@@ -61,14 +62,14 @@ function Home() {
 
   function handleDateSort() {
     !sorted
-      ? filteredData.sort(
+      ? filteredArray.sort(
           (a, b) => new Date(a.created_at) - new Date(b.created_at)
         ) && setSorted(true)
-      : filteredData.sort(
+      : filteredArray.sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         ) && setSorted(false);
 
-    setFilteredData(filteredData);
+    return filteredArray;
   }
 
   return (
@@ -112,7 +113,7 @@ function Home() {
         </div>
         <GitDataTable
           isPending={isPending}
-          rows={filteredData}
+          rows={filteredArray}
           user={userName}
           repo={repoName}
         />
