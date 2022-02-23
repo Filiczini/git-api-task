@@ -12,27 +12,32 @@ function Home() {
   const [assigneeInput, setAssigneeInput] = useState("");
   const [labelInput, setLabelInput] = useState("");
   const [filteredData, setFilteredData] = useState([]);
+  const [sorted, setSorted] = useState(false);
 
   useEffect(() => {
-    let filteredArray =
-      labelInput === ""
-        ? [...data]
-        : data.filter((el) =>
-            el.labels.some((item) => item.name.indexOf(labelInput) > -1)
-          );
-    let second = filteredArray.filter(
-      (el) => el.assignee?.login.indexOf(assigneeInput) > -1
-    );
+    console.log("click");
+    let filteredArray = !labelInput
+      ? [...data]
+      : data.filter((el) =>
+          el.labels.some((item) => item.name.indexOf(labelInput) > -1)
+        );
+    let second = !assigneeInput
+      ? filteredArray
+      : filteredArray.filter(
+          (el) => el.assignee?.login.indexOf(assigneeInput) > -1
+        );
+
     setFilteredData(second);
   }, [labelInput, assigneeInput, data]);
 
   function handleSubmit() {
     setIsPending(true);
     fetch(
-      `https://api.github.com/repos/${userName}/${repoName}/issues?page=1&per_page=100`
+      `https://api.github.com/repos/${userName}/${repoName}/issues?page=1&per_page=10`
     )
       .then((res) => res.json())
       .then((fetchedData) => {
+        console.log(fetchedData);
         setData(fetchedData);
         setFilteredData(fetchedData);
         setIsPending(false);
@@ -53,6 +58,19 @@ function Home() {
   function handleLabel(e) {
     setLabelInput(e.target.value);
   }
+
+  function handleDateSort() {
+    !sorted
+      ? filteredData.sort(
+          (a, b) => new Date(a.created_at) - new Date(b.created_at)
+        ) && setSorted(true)
+      : filteredData.sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        ) && setSorted(false);
+
+    setFilteredData(filteredData);
+  }
+
   return (
     <div className="Home">
       <Container maxWidth="lg">
@@ -87,7 +105,7 @@ function Home() {
               variant="outlined"
               onChange={handleAssignee}
             />
-            <Button onClick={null} variant="outlined">
+            <Button onClick={handleDateSort} variant="outlined">
               SortByDate
             </Button>
           </div>
