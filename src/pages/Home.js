@@ -79,14 +79,16 @@ function Home() {
               label="Username"
               variant="outlined"
               onChange={handleUserName}
+              size="small"
             />
             <TextField
               id="outlined-basic"
               label="Repo name"
               variant="outlined"
               onChange={handleRepoName}
+              size="small"
             />
-            <Button onClick={handleSubmit} variant="outlined">
+            <Button onClick={handleSubmit} variant="outlined" size="large">
               Search
             </Button>
           </form>
@@ -96,14 +98,16 @@ function Home() {
               label="filter by label"
               variant="outlined"
               onChange={handleLabel}
+              size="small"
             />
             <TextField
               id="outlined-basic"
               label="filter by assignee"
               variant="outlined"
               onChange={handleAssignee}
+              size="small"
             />
-            <Button onClick={handleDateSort} variant="outlined">
+            <Button onClick={handleDateSort} variant="outlined" size="large">
               SortByDate
             </Button>
           </div>
