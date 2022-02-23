@@ -31,9 +31,6 @@ function Home() {
     }
   }
   const filteredArray = useMemo(() => {
-    if (!labelInput) {
-      return data;
-    }
     const filterByLabel = data.filter((el) =>
       el.labels.some((item) => item.name.includes(labelInput))
     );
