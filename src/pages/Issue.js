@@ -17,7 +17,7 @@ function Issue() {
         setData(fetchedData);
       })
       .catch((err) => console.log(err));
-  }, []);
+  });
 
   return (
     <div className="issue">
